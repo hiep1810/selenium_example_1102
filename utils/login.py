@@ -5,6 +5,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 import time
 import random
 
+from utils.element_interaction import find_and_click_element
+
 
 def login_to_facebook(driver, email, password):
     driver.get("https://www.facebook.com/")
@@ -25,4 +27,15 @@ def login_to_facebook(driver, email, password):
         time.sleep(random.uniform(0.01, 0.05))
 
     password_field.send_keys(Keys.RETURN)
-    time.sleep(5)
+
+    # Wait for the page to load by checking for a known element that appears post-login
+    WebDriverWait(driver, 20).until(
+        EC.presence_of_element_located((By.XPATH, "//span[contains(text(), \"Always confirm that it's me\")]"))
+    )
+
+    element_xpath = "//span[contains(text(), \"Always confirm that it's me\")]"
+
+    if find_and_click_element(driver, element_xpath):
+        print("Element found and clicked!")
+    else:
+        print("Element not found after 10 attempts")

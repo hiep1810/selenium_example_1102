@@ -1,6 +1,8 @@
+from selenium.common import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
+from FacebookBot import FacebookBot
 from config.settings import EMAIL, PASSWORD
 from utils.driver_setup import setup_driver
 from utils.login import login_to_facebook
@@ -133,39 +135,15 @@ def click_see_more_button(driver):
 
     return clicked_count
 
+
 def main():
-    driver = setup_driver()
+    bot = FacebookBot(EMAIL, PASSWORD)
 
-    login_to_facebook(driver, EMAIL, PASSWORD)
-
-    element_xpath = "//span[contains(text(), \"Always confirm that it's me\")]"
-
-    if find_and_click_element(driver, element_xpath):
-        print("Element found and clicked!")
-    else:
-        print("Element not found after 10 attempts")
-
-    navigate_to_page(driver,  "https://www.facebook.com/groups/nghienshoppingviet/?sorting_setting=CHRONOLOGICAL", 'div[role="feed"]')
-
-
-    # Find the div element with role="feed"
-    feed_div = driver.find_element(By.CSS_SELECTOR, 'div[role="feed"]')
-
-    human_like_scroll_to_bottom(driver, scroll_pause_time=1, scroll_height=get_total_scroll_height(driver), times=3)
-    elements = feed_div.find_elements(By.CSS_SELECTOR, '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z')
-    exact_match_elements = [elem for elem in elements if has_exact_classes(elem, "x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z")]
-
-    # Check and click 'See more' button if found
-    click_see_more_button(driver)
-    elements = feed_div.find_elements(By.CSS_SELECTOR, '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z')
-    exact_match_elements = [elem for elem in elements if has_exact_classes(elem, "x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z")]
-
-    # Save the exact match elements to a file
-    save_elements_to_file(exact_match_elements, "exact_match_elements.txt")
+    bot.extract_data_from_page("https://www.facebook.com/groups/nghienshoppingviet/?sorting_setting=CHRONOLOGICAL")
 
     time.sleep(500)
 
-    driver.quit()
+    bot.bot.quit()
 
 
 if __name__ == "__main__":

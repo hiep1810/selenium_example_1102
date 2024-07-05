@@ -7,9 +7,21 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+EMAIL = os.getenv("EMAIL")
+PASSWORD = os.getenv("PASSWORD")
+
+
+chrome_options = webdriver.ChromeOptions()
+prefs = {"profile.default_content_setting_values.notifications" : 2}
+chrome_options.add_experimental_option("prefs",prefs)
 
 # Set up the WebDriver using ChromeDriverManager
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 # Navigate to the Facebook login page
 driver.get("https://www.facebook.com/")
@@ -23,8 +35,8 @@ password_field = WebDriverWait(driver, 10).until(
 )
 
 # Enter the email and password
-email_field.send_keys("xxxx")
-password_field.send_keys("yyyy")
+email_field.send_keys(EMAIL)
+password_field.send_keys(PASSWORD)
 
 # Submit the login form
 password_field.send_keys(Keys.RETURN)
@@ -61,8 +73,14 @@ if element:
 else:
     print("Element not found after 10 attempts")
 
+
+driver.get("https://www.facebook.com/groups/nghienshoppingviet/?sorting_setting=CHRONOLOGICAL")
+
+
+
+
 # Wait for some time to observe the result
-time.sleep(5)
+time.sleep(500)
 
 # Close the browser
 driver.quit()
